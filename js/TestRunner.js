@@ -1,6 +1,6 @@
 
 var TestRunner = new function(){
-  this.runner = new TestRunnerUI(); 
+  this.runner = new SimpleTestRunner(); 
   var tests = [];
   
   this.addTest = function(test){
