@@ -1,5 +1,5 @@
 
-function FunctionalTestRunner(){
+function TestRunnerUI(){
   var testWindow;  
   var progressBar;
   function makeWindow(){
@@ -21,7 +21,11 @@ function FunctionalTestRunner(){
   
   
   this.initRun = function(tests){
-    makeWindow();
+    if(TestRunnerUI.testInNewWindow){
+      makeWindow();
+    }else{
+      testWindow = window;
+    }
     progressBar = new ProgressBar(tests.length);
      testWindow.document.body.appendChild(progressBar.element);
     listTests(tests);
@@ -90,4 +94,4 @@ function FunctionalTestRunner(){
   }
 }
 
-
+TestRunnerUI.testInNewWindow = false;

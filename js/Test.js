@@ -71,18 +71,16 @@ function Test(name, body){
     }catch(e){
       if(e instanceof AssertionFailureError  ){
          this.runner.testFailure(this, e);
-      }else if(JsUnitException){
-        if(e instanceof JsUnitException){  
-          this.runner.testFailure(this, new AssertionFailureError(e.jsUnitMessage));
-        }
+      }else if(JsUnitException && e instanceof JsUnitException){
+          this.runner.testFailure(this, new AssertionFailureError(e.comment + " : " + e.jsUnitMessage));
       }else{
         if(!this.expectsError){
           this.runner.testError(this, e);
+          throw e;
         }else{
           this.expectsError = false;
-          //this.log("Ignored Error: " + e.message);
+          GM_log("Ignored Error: " + e.message);
         } 
-        throw e;
       }
     }
 
