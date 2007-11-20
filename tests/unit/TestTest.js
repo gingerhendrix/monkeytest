@@ -14,7 +14,10 @@ new Test("Constructor",
     TestRunner = mockControl.createMock(TestRunner);
     
     TestRunner.expects().addTest(TypeOf.isA(Test));
-    new Test("", function(){});
+    var body = function(){};
+    var test = new Test("NAME", body);
+    t.assert(test.name == "NAME", "Incorrect name" + test.name)
+    t.assert(test.body == body, "Incorrect body " + test.body)
     mockControl.verify();
     t.assert(true);
   }
