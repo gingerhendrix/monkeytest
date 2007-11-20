@@ -9,9 +9,11 @@ function Test(name, body){
   TestRunner.addTest(this);
     
   this.assert = function(cond, msg){
+    this.runner.testAssertion(this);
     if(!cond){
       throw new AssertionFailureError("Assertion Failed: " + msg);
     }
+    
   }
   
   this.fail = function(msg){
@@ -22,18 +24,13 @@ function Test(name, body){
   }
   
   this.expectError = function(func){
-    this.expectsError = true;
-    func();
-    if(expectsError){
+    try{
+      func();
       throw new AssertionFailureError("Expected Error");
+    }catch(e){
     }
   }
-  
-  this.throwAndPass = function(e){
-    expectError = true;
-    throw e;
-  }
-  
+    
   this.continueWithTimeout = function(continuation, timeout){
     this.waitForFinish = true;
     var test = this;
@@ -42,7 +39,6 @@ function Test(name, body){
       
       test.continuationTimeout = true;
       _run.apply(test, [function(test){
-         GM_log("In timeout");
          test.fail("Continuation Timed out after: " + timeout);
       }])    
     }, timeout);
@@ -57,16 +53,11 @@ function Test(name, body){
     }
   }
   
-  this.finish = function(){
-    this.runner.testSuccess(this);
-  }
-  
   function _run(fn){
     try{
-      GM_log("Running " + fn.toSource());
       fn(this);
       if(!this.waitForFinish){
-         this.finish();  
+        this.runner.testSuccess(this);
       }
     }catch(e){
       if(e instanceof AssertionFailureError  ){
@@ -79,7 +70,6 @@ function Test(name, body){
           throw e;
         }else{
           this.expectsError = false;
-          GM_log("Ignored Error: " + e.message);
         } 
       }
     }
@@ -99,3 +89,6 @@ function AssertionFailureError(message){
 }
 AssertionFailureError.prototype = new Error();
 
+if(typeof JsUnitException == "undefined"){
+  JsUnitException = function(){};
+}

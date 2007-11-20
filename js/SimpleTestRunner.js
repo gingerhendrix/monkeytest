@@ -1,11 +1,13 @@
 
-function TestRunnerUI(){
+function SimpleTestRunner(){
   var testWindow;  
   var progressBar;
+  
+  var assertions = 0;
+  
   function makeWindow(){
     testWindow = window.open("", "functional_test_runner", "width=600, height=600, location=no, toolbar=no, menubar=no, resizable=yes");
     testWindow.document.body.innerHTML = "<h1>Functional Test Runner</h1>";
-    
   }
   
   function listTests(tests){
@@ -21,7 +23,7 @@ function TestRunnerUI(){
   
   
   this.initRun = function(tests){
-    if(TestRunnerUI.testInNewWindow){
+    if(SimpleTestRunner.testInNewWindow){
       makeWindow();
     }else{
       testWindow = window;
@@ -37,10 +39,16 @@ function TestRunnerUI(){
   
   this.testInit = function(test){
     test.element.style.color = "#0000ff";
+    assertions = 0;
+  }
+  
+  this.testAssertion = function(test){
+    assertions++;
   }
   
   this.testSuccess = function(test){
     test.element.style.color = "#00ff00";
+    test.element.innerHTML += " (" + assertions + " assertions)"
     progressBar.increment();
   }
   
@@ -94,4 +102,4 @@ function TestRunnerUI(){
   }
 }
 
-TestRunnerUI.testInNewWindow = false;
+SimpleTestRunner.testInNewWindow = false;

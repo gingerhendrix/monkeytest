@@ -8,7 +8,7 @@ var TestRunner = new function(){
   }
   
   this.run = function(){
-    var runner = test.runner();
+    var runner = this.runner;
     runner.initRun(tests);
     tests.forEach(function(test){
       test.run(runner);
