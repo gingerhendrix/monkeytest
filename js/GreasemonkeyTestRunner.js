@@ -26,7 +26,7 @@ function GreasemonkeyTestRunner(name){
   }
   
   this.log = function(msg){
-    
+    this.logEl.appendChild(document.createTextNode(msg));
   }
   
   this.finishRun = function(){
