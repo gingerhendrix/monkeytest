@@ -26,7 +26,9 @@ function GreasemonkeyTestRunner(name){
   }
   
   this.log = function(msg){
-    this.logEl.appendChild(document.createTextNode(msg));
+    var msgNode = document.createElement("div");
+    msgNode.innerHTML = msg;
+    this.logEl.appendChild(msgNode);
   }
   
   this.finishRun = function(){
@@ -51,12 +53,16 @@ function GreasemonkeyTestRunner(name){
   this.testFailure = function(test, e){
     this.testEl.setAttribute("class", "test failure");
     test.element.setAttribute("class", "failure")
-    this.log("FAILURE: " +e.message); 
+    test.element.innerHTML += " FAILED"
+    this.log("FAILURE: "+ test.name + " : " + e.message); 
   }
   
   this.testError = function(test, e){
      this.testEl.setAttribute("class", "test error");
      test.element.setAttribute("class", "error")
-     this.log("ERROR: " + e.message);
+     test.element.innerHTML += " ERROR"
+     this.log("ERROR: " + test.name + " : " + e.message);
   }
 }
+
+GreasemonkeyTestRunner.prototype = new AbstractTestRunner();

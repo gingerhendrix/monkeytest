@@ -11,13 +11,13 @@ function Test(name, body){
   this.assert = function(cond, msg){
     this.runner.testAssertion(this);
     if(!cond){
-      throw new AssertionFailureError("Assertion Failed: " + msg);
+      throw new AssertionFailureError(msg);
     }
     
   }
   
   this.fail = function(msg){
-     throw new AssertionFailureError("Failure: " + msg);
+     throw new AssertionFailureError(msg);
   }
   
   this.log = function(msg){
@@ -92,3 +92,6 @@ AssertionFailureError.prototype = new Error();
 if(typeof JsUnitException == "undefined"){
   JsUnitException = function(){};
 }
+
+if (typeof(GMTest) == "undefined") GMTest = {}
+GMTest.Test = Test

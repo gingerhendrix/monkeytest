@@ -102,4 +102,6 @@ function SimpleTestRunner(){
   }
 }
 
+SimpleTestRunner.prototype = new AbstractTestRunner();
+
 SimpleTestRunner.testInNewWindow = false;

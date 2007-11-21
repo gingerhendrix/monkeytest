@@ -11,7 +11,11 @@ var TestRunner = new function(){
     var runner = this.runner;
     runner.initRun(tests);
     tests.forEach(function(test){
-      test.run(runner);
+      try{
+        test.run(runner);
+      }catch(e){
+        
+      }
     })
     runner.finishRun();
   }

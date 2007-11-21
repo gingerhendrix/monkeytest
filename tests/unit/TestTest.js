@@ -103,7 +103,7 @@ new Test("Run Failure", function(t){
   
   runnerMock.expects().testInit(test).andReturn(null);
   runnerMock.expects().testAssertion(test).andReturn(null);
-  runnerMock.expects().testFailure(test, "AssertionFailureError: Assertion Failed: undefined").andReturn(null);
+  runnerMock.expects().testFailure(test, "AssertionFailureError").andReturn(null);
   
   test.run(runnerMock);
   
@@ -119,7 +119,7 @@ new Test("Run Failure with Message", function(t){
   
   runnerMock.expects().testInit(test).andReturn(null);
   runnerMock.expects().testAssertion(test).andReturn(null);
-  runnerMock.expects().testFailure(test, "AssertionFailureError: Assertion Failed: Message").andReturn(null);
+  runnerMock.expects().testFailure(test, "AssertionFailureError: Message").andReturn(null);
   
   test.run(runnerMock);
   
