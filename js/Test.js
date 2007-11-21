@@ -1,4 +1,4 @@
-function Test(name, body){
+function Test(name, body, addTest){
   this.expectsError = false;
   this.waitForFinish = false;
   this.continuationTimeout = false;
@@ -6,7 +6,9 @@ function Test(name, body){
   this.name = name;
   this.body = body;
   
-  TestRunner.addTest(this);
+  if(typeof(addTest)=="undefined" || addTest == true){
+    TestRunner.addTest(this);
+  }
     
   this.assert = function(cond, msg){
     this.runner.testAssertion(this);

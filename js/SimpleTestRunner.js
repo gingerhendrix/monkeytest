@@ -2,7 +2,11 @@
 function SimpleTestRunner(){
   var testWindow;  
   var progressBar;
-  
+  var suiteTests = 0;
+  var suiteErrors = 0;
+  var suiteFailures = 0;
+  var suiteSuccesses = 0;
+  var suitePassed = true;
   var assertions = 0;
   
   function makeWindow(){
@@ -11,14 +15,27 @@ function SimpleTestRunner(){
   }
   
   function listTests(tests){
+    var testList = makeList(tests)
+    testWindow.document.body.appendChild(testList);
+  }
+  
+  function makeList(tests){
     var testList = document.createElement("ul");
     tests.forEach(function(test){
       var testEl = document.createElement("li");
-      testEl.innerHTML = test.name;
+      var testNameEl = document.createElement("span");
+      testNameEl.innerHTML = test.name;
+      testEl.appendChild(testNameEl);
+     
+      if(test.constructor == TestSuite){
+        var subList = makeList(test.tests);
+        testEl.appendChild(subList);
+      }
+      
       testList.appendChild(testEl);
-      test.element = testEl;
+      test.element = testNameEl;
     });
-    testWindow.document.body.appendChild(testList);
+    return testList;
   }
   
   
@@ -37,9 +54,36 @@ function SimpleTestRunner(){
     
   }
   
+  this.suiteInit = function(suite){
+    suite.element.style.color = "#0000ff";
+    suiteTests = 0;
+    suiteSuccesses = 0;
+    suiteErrors = 0;
+    suiteFailures = 0;
+    suitePassed = true;
+  }
+  
+  this.suiteFinish = function(suite){
+    var msg = " (" + suiteTests + " tests";
+    if(suiteFailures > 0){
+      msg += ", "  + suiteFailures + " failures";
+    }
+    if(suiteErrors > 0){
+      msg += ", "  + suiteErrors + " errors";
+    }
+    msg += ")";
+    suite.element.innerHTML += msg;
+    if(suitePassed){
+      suite.element.style.color = "#00ff00";
+    }else{
+      suite.element.style.color = "#00ff00";
+    }
+  }
+  
   this.testInit = function(test){
     test.element.style.color = "#0000ff";
     assertions = 0;
+    suiteTests++;
   }
   
   this.testAssertion = function(test){
@@ -50,14 +94,19 @@ function SimpleTestRunner(){
     test.element.style.color = "#00ff00";
     test.element.innerHTML += " (" + assertions + " assertions)"
     progressBar.increment();
+    suiteSuccesses++;
+    
   }
   
   this.testFailure = function(test, e){
     _failure(test, "Failure: " + e.message)
+    suiteFailures++;
+    
   }
   
   this.testError = function(test, e){
     _failure(test, "Error: " + e.message)
+    suiteErrors++;
   }
   
   function _failure(test, message){
@@ -67,6 +116,7 @@ function SimpleTestRunner(){
     test.element.appendChild(msg);
     progressBar.increment();
     progressBar.fail();
+    suitePassed = false;
   }
   
   function ProgressBar(numTests){

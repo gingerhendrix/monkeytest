@@ -5,10 +5,12 @@ function TestSuite(name, tests){
   this.setUp = function(){};
   this.tearDown = function(){};
   
+  TestRunner.addTest(this);
+  
   function init(){
     for(var test in tests){
       if(isTestMethod(tests, test)){
-        this.tests.push(new Test(test, tests[test]));  
+        this.tests.push(new Test(test, tests[test], false));  
       }
     }
     if(typeof(tests['setUp']) == 'function'){

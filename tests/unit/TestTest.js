@@ -2,14 +2,11 @@
  * Unit tests for Test.js
  */
 
-new Test("Sanity Test",  
-  function(t){
+new TestSuite("TestTests", {
+ sanityTest : function(t){
    t.assert(true, "Assert true should not fail");
- }
-);
-
-new Test("Constructor", 
-  function(t){
+ },
+ constructorTest : function(t){
     var mockControl = new MockControl();
     TestRunner = mockControl.createMock(TestRunner);
     
@@ -20,11 +17,8 @@ new Test("Constructor",
     t.assert(test.body == body, "Incorrect body " + test.body)
     mockControl.verify();
     t.assert(true);
-  }
-);
-
-new Test("Assertion Test",  
-  function(t){
+  },
+  assertionTest : function(t){
     var test = new Test("", function(){});
     
     var mockControl = new MockControl();
@@ -36,12 +30,8 @@ new Test("Assertion Test",
     
     mockControl.verify();
     t.assert(true);
- }
-);
-
-
-new Test("Assertion Failure Test",  
-  function(t){
+  },
+  assertionFailureTest : function(t){
     var test = new Test("", function(){ });
     
     test.runner = {testAssertion : function(){}};
@@ -52,21 +42,15 @@ new Test("Assertion Failure Test",
     }catch(e){
        t.assert(e instanceof AssertionFailureError, "AssertionFailureError expected, got " + e);
     }
- }
-);
-
-new Test("Expect Error Test",  
-  function(t){
+  },
+  expectErrorTest : function(t){
     var test = new Test("", function(){});
      test.expectError(function(){
        throw Error;
      });
     t.assert(true);
- }
-);
-
-new Test("Expect Error Failure Test",  
-  function(t){
+  },
+  expectErrorFailureTest : function(t){
     var test = new Test("", function(){});
     try{
        test.expectError(function(){
@@ -76,54 +60,55 @@ new Test("Expect Error Failure Test",
     }catch(e){
        t.assert(e instanceof AssertionFailureError, "AssertionFailureError expected, got " + e);
     }
- }
-);
+ },
 
-new Test("Run Success", function(t){
-  var mockControl = new MockControl();
-  runnerMock = mockControl.createMock(SimpleTestRunner);
+ runSuccess : function(t){
+    var mockControl = new MockControl();
+    runnerMock = mockControl.createMock(SimpleTestRunner);
+    
+    var test = new Test("", function(t){  t.assert(true) });
+    
+    runnerMock.expects().testInit(test).andReturn(null);
+    runnerMock.expects().testAssertion(test).andReturn(null);
+    runnerMock.expects().testSuccess(test).andReturn(null);
+    
+    test.run(runnerMock);
+    
+    mockControl.verify();
+    t.assert(true);  
+  },
   
-  var test = new Test("", function(t){  t.assert(true) });
-  
-  runnerMock.expects().testInit(test).andReturn(null);
-  runnerMock.expects().testAssertion(test).andReturn(null);
-  runnerMock.expects().testSuccess(test).andReturn(null);
-  
-  test.run(runnerMock);
-  
-  mockControl.verify();
-  t.assert(true);
+  runFailure : function(t){
+    var mockControl = new MockControl();
+    runnerMock = mockControl.createMock(SimpleTestRunner);
+    
+    var test = new Test("", function(t){ t.assert(false) });
+    
+    runnerMock.expects().testInit(test).andReturn(null);
+    runnerMock.expects().testAssertion(test).andReturn(null);
+    runnerMock.expects().testFailure(test, "AssertionFailureError").andReturn(null);
+    
+    test.run(runnerMock);
+    
+    mockControl.verify();
+    t.assert(true);
+  },
+
+  runFailureWithMessage : function(t){
+    function(t){
+      var mockControl = new MockControl();
+      runnerMock = mockControl.createMock(SimpleTestRunner);
+      
+      var test = new Test("", function(t){ t.assert(false, "Message") });
+      
+      runnerMock.expects().testInit(test).andReturn(null);
+      runnerMock.expects().testAssertion(test).andReturn(null);
+      runnerMock.expects().testFailure(test, "AssertionFailureError: Message").andReturn(null);
+      
+      test.run(runnerMock);
+      
+      mockControl.verify();
+      t.assert(true);
+    }
+  }     
 });
-
-new Test("Run Failure", function(t){
-  var mockControl = new MockControl();
-  runnerMock = mockControl.createMock(SimpleTestRunner);
-  
-  var test = new Test("", function(t){ t.assert(false) });
-  
-  runnerMock.expects().testInit(test).andReturn(null);
-  runnerMock.expects().testAssertion(test).andReturn(null);
-  runnerMock.expects().testFailure(test, "AssertionFailureError").andReturn(null);
-  
-  test.run(runnerMock);
-  
-  mockControl.verify();
-  t.assert(true);
-});
-
-new Test("Run Failure with Message", function(t){
-  var mockControl = new MockControl();
-  runnerMock = mockControl.createMock(SimpleTestRunner);
-  
-  var test = new Test("", function(t){ t.assert(false, "Message") });
-  
-  runnerMock.expects().testInit(test).andReturn(null);
-  runnerMock.expects().testAssertion(test).andReturn(null);
-  runnerMock.expects().testFailure(test, "AssertionFailureError: Message").andReturn(null);
-  
-  test.run(runnerMock);
-  
-  mockControl.verify();
-  t.assert(true);
-});
-
