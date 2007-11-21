@@ -10,7 +10,7 @@ function TestSuite(name, tests){
   function init(){
     for(var test in tests){
       if(isTestMethod(tests, test)){
-        this.tests.push(new Test(test, tests[test], false));  
+        this.tests.push(new GMTest.Test(test, tests[test], false));  
       }
     }
     if(typeof(tests['setUp']) == 'function'){
@@ -25,9 +25,13 @@ function TestSuite(name, tests){
     runner.suiteInit(this);
     for(var i=0; i<this.tests.length; i++){
       var test = this.tests[i];
-      this.setUp.apply(test)
-      test.run(runner);
-      this.tearDown.apply(test)
+      try{
+        this.setUp.apply(test)
+        test.run(runner);
+        this.tearDown.apply(test)
+      }catch(e){
+        //Swallow and continue
+      }
     }
     runner.suiteFinish(this);
   }
