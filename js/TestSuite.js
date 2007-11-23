@@ -13,11 +13,11 @@ function TestSuite(name, tests){
         this.tests.push(new GMTest.Test(test, tests[test], false));  
       }
     }
-    if(typeof(tests['setUp']) == 'function'){
-      this.setUp = tests['setUp'];
+    if(typeof(tests[TestSuite.setUpProperty]) == 'function'){
+      this.setUp = tests[TestSuite.setUpProperty];
     }
-    if(typeof(tests['tearDown']) == 'function'){
-      this.tearDown = tests['tearDown'];
+    if(typeof(tests[TestSuite.tearDownProperty]) == 'function'){
+      this.tearDown = tests[TestSuite.tearDownProperty];
     }    
   }
   
@@ -25,25 +25,35 @@ function TestSuite(name, tests){
     runner.suiteInit(this);
     for(var i=0; i<this.tests.length; i++){
       var test = this.tests[i];
-      try{
-        this.setUp.apply(test)
-        test.run(runner);
-        this.tearDown.apply(test)
-      }catch(e){
-        //Swallow and continue
-      }
+      var suite = this;
+      (function(test){
+        window.setTimeout(function(){
+          suite.setUp.apply(test, [test]);
+        },1);
+        window.setTimeout(function(){
+          test.run.apply(test,[runner]);
+        },1);
+        window.setTimeout(function(){
+          suite.tearDown.apply(test, [test]);
+        },1);
+      })(test);
     }
-    runner.suiteFinish(this);
+    window.setTimeout(function(){
+      runner.suiteFinish(suite);
+    }, 1);
   }
   
   
   function isTestMethod(obj, prop){
     return obj.hasOwnProperty(prop) 
       && typeof(obj[prop])=="function" 
-      && prop != "setUp" 
-      && prop != "tearDown" 
+      && prop != TestSuite.setUpProperty
+      && prop != TestSuite.tearDownProperty 
       && prop.indexOf("_") != 0;
   }
   
   init.apply(this);
 }
+
+TestSuite.setUpProperty = "setUp"
+TestSuite.tearDownProperty = "tearDown"
