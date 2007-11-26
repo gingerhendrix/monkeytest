@@ -8,9 +8,9 @@ new TestSuite("TestTests", {
  },
  constructorTest : function(t){
     var mockControl = new MockControl();
-    TestRunner = mockControl.createMock(TestRunner);
+    TestManager = mockControl.createMock(TestManager);
     
-    TestRunner.expects().addTest(TypeOf.isA(Test));
+    TestManager.expects().addTest(TypeOf.isA(Test));
     var body = function(){};
     var test = new Test("NAME", body);
     t.assert(test.name == "NAME", "Incorrect name" + test.name)

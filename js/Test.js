@@ -7,7 +7,7 @@ function Test(name, body, addTest){
   this.body = body;
   
   if(typeof(addTest)=="undefined" || addTest == true){
-    TestRunner.addTest(this);
+    TestManager.addTest(this);
   }
     
   this.assert = function(cond, msg){

@@ -6,7 +6,7 @@ function TestSuite(name, tests){
   this.tearDown = function(){};
   this.asynchronous = false;
   
-  TestRunner.addTest(this);
+  TestManager.addTest(this);
   
   function init(){
     for(var test in tests){
@@ -30,8 +30,12 @@ function TestSuite(name, tests){
     for(var i=0; i<this.tests.length; i++){
       var test = this.tests[i];
       var suite = this;
+      
       suite.setUp(test);
-      test.run(runner);
+      try{
+        test.run(runner);
+      }catch(e){
+      }
       suite.tearDown(test);
     }
     runner.suiteFinish(this);
@@ -43,25 +47,25 @@ function TestSuite(name, tests){
     var state = "suiteInit";
     var timer = window.setInterval(function(){
       if(state=="suiteInit"){
+        state = "nextTest"
         runner.suiteInit(suite);
         var currentTest = 0;
-        state = "nextTest"
       }else if(state=="nextTest"){
         if(currentTest < tests.length){
+          state = "runTest";
           var test = tests[currentTest]; 
           suite.setUp(test);
-          state = "runTest";
         }else{
           state = "suiteFinished"
         }
       }else if(state=="runTest"){
+          state = "finishTest";
           var test = tests[currentTest]; 
           test.run(runner);
-          state = "finishTest";
       }else if(state=="finishTest"){
+          state = "nextTest";
           var test = tests[currentTest]; 
           suite.tearDown(runner);
-          state = "nextTest";
       }else if(state=="suiteFinished"){
           runner.suiteFinish(suite);
           window.clearInterval(timer);
