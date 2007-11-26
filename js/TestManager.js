@@ -1,5 +1,5 @@
 
-var TestRunner = new function(){
+var TestManager = new function(){
   this.runner = new SimpleTestRunner(); 
   var tests = [];
   
