@@ -1,22 +1,21 @@
 
 function SimpleTestRunner(){
-  var testWindow;  
-  var progressBar;
-  var suiteTests = 0;
-  var suiteErrors = 0;
-  var suiteFailures = 0;
-  var suiteSuccesses = 0;
-  var suitePassed = true;
-  var assertions = 0;
+  this.window;
+  this.testListEl;
+  this.overviewEl;
+  this.progressBar;
+  
+  this.base = new BaseTestRunner();
   
   function makeWindow(){
-    testWindow = window.open("", "functional_test_runner", "width=600, height=600, location=no, toolbar=no, menubar=no, resizable=yes");
-    testWindow.document.body.innerHTML = "<h1>Functional Test Runner</h1>";
+    var window = window.open("", "functional_test_runner", "width=600, height=600, location=no, toolbar=no, menubar=no, resizable=yes");
+    window.document.body.innerHTML = "<h1>Functional Test Runner</h1>";
+    return window;
   }
   
   function listTests(tests){
-    var testList = makeList(tests)
-    testWindow.document.body.appendChild(testList);
+    this.testListEl = makeList(tests)
+    this.window.document.body.appendChild(this.testListEl);
   }
   
   function makeList(tests){
@@ -38,75 +37,86 @@ function SimpleTestRunner(){
     return testList;
   }
   
+  function countTests(tests){
+    var count = 0;
+    tests.forEach(function(test){
+      if(test.constructor == TestSuite){
+        count += countTests(test.tests);
+      }else{
+        count += 1;
+      }
+    });
+    return count;
+  }
   
   this.initRun = function(tests){
+    this.base.initRun(tests);
     if(SimpleTestRunner.testInNewWindow){
-      makeWindow();
+      this.window = makeWindow();
     }else{
-      testWindow = window;
+      this.window = window;
     }
-    progressBar = new ProgressBar(tests.length);
-     testWindow.document.body.appendChild(progressBar.element);
+    var numTests = countTests(tests)
+    this.progressBar = new ProgressBar(numTests);
+    this.window.document.body.appendChild(this.progressBar.element);
+    this.overviewEl = this.window.document.createElement("div");
+    this.overviewEl.innerHTML = numTests + " tests";
+    this.window.document.body.appendChild(this.overviewEl);
     listTests(tests);
   }
   
   this.finishRun = function(){
-    
+    this.base.finishRun();
   }
   
   this.suiteInit = function(suite){
+    this.base.suiteInit(suite);
     suite.element.style.color = "#0000ff";
-    suiteTests = 0;
-    suiteSuccesses = 0;
-    suiteErrors = 0;
-    suiteFailures = 0;
-    suitePassed = true;
   }
   
   this.suiteFinish = function(suite){
-    var msg = " (" + suiteTests + " tests";
-    if(suiteFailures > 0){
-      msg += ", "  + suiteFailures + " failures";
+    this.base.suiteFinish(suite);
+    var msg = " (" + this.base.suiteTests + " tests";
+    if(this.base.suiteFailures > 0){
+      msg += ", "  + this.base.suiteFailures + " failures";
     }
-    if(suiteErrors > 0){
-      msg += ", "  + suiteErrors + " errors";
+    if(this.base.suiteErrors > 0){
+      msg += ", "  + this.base.suiteErrors + " errors";
     }
     msg += ")";
     suite.element.innerHTML += msg;
-    if(suitePassed){
+    if(this.base.suitePassed){
       suite.element.style.color = "#00ff00";
     }else{
-      suite.element.style.color = "#00ff00";
+      suite.element.style.color = "#ff0000";
     }
   }
   
   this.testInit = function(test){
+    this.base.testInit(test);
     test.element.style.color = "#0000ff";
-    assertions = 0;
-    suiteTests++;
   }
   
   this.testAssertion = function(test){
-    assertions++;
+    this.base.testAssertion(test);
   }
   
   this.testSuccess = function(test){
+    this.base.testSuccess(test);
     test.element.style.color = "#00ff00";
-    test.element.innerHTML += " (" + assertions + " assertions)"
-    progressBar.increment();
-    suiteSuccesses++;
-    
+    test.element.innerHTML += " (" + this.base.assertions + " assertions)"
+    this.progressBar.increment();
   }
   
   this.testFailure = function(test, e){
-    _failure(test, "Failure: " + e.message)
-    suiteFailures++;
-    
+    this.base.testFailure(test);
+    _failure.call(this, test, "Failure: " + e.message)
   }
   
   this.testError = function(test, e){
-    _failure(test, "Error: " + e.message)
-    suiteErrors++;
+     this.base.testError(test);
+    _failure.call(this, test, "Error: " + e.message)
+    
   }
   
   function _failure(test, message){
@@ -114,8 +124,8 @@ function SimpleTestRunner(){
     var msg = document.createElement("div");
     msg.innerHTML = message;
     test.element.appendChild(msg);
-    progressBar.increment();
-    progressBar.fail();
+    this.progressBar.increment();
+    this.progressBar.fail();
     suitePassed = false;
   }
   
