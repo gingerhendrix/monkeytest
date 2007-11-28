@@ -3,14 +3,10 @@
 function GreasemonkeyTestRunner(name){
   this.testEl;
   this.logEl;
-  var assertions = 0;
-  var suiteTests = 0;
-  var suiteErrors = 0;
-  var suiteFailures = 0;
-  var suiteSuccesses = 0;
-  var suitePassed = true;
-  
+  this.base = new BaseTestRunner();
+ 
   this.initRun = function(tests){
+    this.base.initRun(tests);
     this.testEl = document.getElementById(name);
     this.logEl = document.evaluate("id('"+name+"')//*[@class='log']",
                        document, 
@@ -23,6 +19,7 @@ function GreasemonkeyTestRunner(name){
                        XPathResult.FIRST_ORDERED_NODE_TYPE, 
                        null).singleNodeValue;
     makeList(this.testsEl, tests);
+    this.testEl.setAttribute("class", "test running");
   }
   
   function makeList(testsEl, tests){
@@ -52,30 +49,31 @@ function GreasemonkeyTestRunner(name){
   }
   
   this.finishRun = function(){
-  
+    this.base.finishRun();
+    if(this.base.passed){
+      this.testEl.setAttribute("class", "test passed");
+    }else{
+      this.testEl.setAttribute("class", "test failure");
+    }
   }
   
   this.suiteInit = function(suite){
+    this.base.suiteInit(suite);
     suite.element.setAttribute("class", "suite running")
-    suiteTests = 0;
-    suiteErrors = 0;
-    suiteFailures = 0;
-    suiteSuccesses = 0;
-    suitePassed = true;
   }
   
   this.suiteFinish = function(suite){
-    
-    var msg = " (" + suiteTests + " tests";
-    if(suiteFailures > 0){
-      msg += ", "  + suiteFailures + " failures";
+    this.base.suiteFinish(suite);    
+    var msg = " (" + this.base.suiteTests + " tests";
+    if(this.base.suiteFailures > 0){
+      msg += ", "  + this.base.suiteFailures + " failures";
     }
-    if(suiteErrors > 0){
-      msg += ", "  + suiteErrors + " errors";
+    if(this.base.suiteErrors > 0){
+      msg += ", "  + this.base.suiteErrors + " errors";
     }
     msg += ")";
     suite.element.innerHTML += msg;
-    if(suitePassed){
+    if(this.base.suitePassed){
       suite.element.setAttribute("class", "suite success")
     }else{
       suite.element.setAttribute("class", "suite failure")
@@ -83,36 +81,31 @@ function GreasemonkeyTestRunner(name){
   }
   
   this.testInit = function(test){
+    this.base.testInit(test);
     test.element.setAttribute("class", "running")
-    assertions = 0;
-    suiteTests++;
   }
   
   this.testAssertion = function(test){
-    assertions++;
+    this.base.testAssertion(test);
   }
   
   this.testSuccess = function(test){
+    this.base.testSuccess(test);
     test.element.setAttribute("class", "success")
-    test.element.innerHTML += " (" + assertions + " assertions)"
-    suiteSuccesses++;
-    }
+    test.element.innerHTML += " (" + this.base.assertions + " assertions)"
+  }
   
   this.testFailure = function(test, e){
-    this.testEl.setAttribute("class", "test failure");
+    this.base.testFailure(test, e);
     test.element.setAttribute("class", "failure")
     test.element.innerHTML += " FAILED"
-    suiteFailures++;
-    suitePassed = false;
     this.log("FAILURE: "+ test.name + " : " + e.message); 
   }
   
   this.testError = function(test, e){
-     this.testEl.setAttribute("class", "test error");
+     this.base.testError(test, e);
      test.element.setAttribute("class", "error")
      test.element.innerHTML += " ERROR"
-     suiteErrors++;
-     suitePassed = false;
      this.log("ERROR: " + test.name + " : " + e.message);
   }
 }

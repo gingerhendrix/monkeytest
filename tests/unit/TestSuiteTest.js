@@ -53,5 +53,9 @@ new TestSuite("TestSuite Test", {
         mockControl.verify();
         t.assert(true);
    },
+   
+   asynchronousRunTest : function(t){
+     
+   }
 
 });

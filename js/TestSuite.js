@@ -25,6 +25,7 @@ function TestSuite(name, tests){
   this.run = function(runner){
     if(this.asynchronous){
      this.asynchronousRun(runner); 
+     return;
     }
     runner.suiteInit(this);
     for(var i=0; i<this.tests.length; i++){
@@ -45,27 +46,42 @@ function TestSuite(name, tests){
     var tests = this.tests;
     var suite = this;
     var state = "suiteInit";
+    var currentTest = 0;
     var timer = window.setInterval(function(){
       if(state=="suiteInit"){
         state = "nextTest"
         runner.suiteInit(suite);
-        var currentTest = 0;
+        currentTest = 0;
       }else if(state=="nextTest"){
         if(currentTest < tests.length){
           state = "runTest";
-          var test = tests[currentTest]; 
-          suite.setUp(test);
+          var test = tests[currentTest];
+          try{ 
+            suite.setUp(test);
+          }catch(e){
+            
+          }
         }else{
           state = "suiteFinished"
         }
       }else if(state=="runTest"){
           state = "finishTest";
           var test = tests[currentTest]; 
-          test.run(runner);
+          try{
+            test.run(runner);
+          }catch(e){
+            
+          }
       }else if(state=="finishTest"){
           state = "nextTest";
-          var test = tests[currentTest]; 
-          suite.tearDown(runner);
+          var test = tests[currentTest];
+          try{ 
+            suite.tearDown(runner);
+          }catch(e){
+          
+          }finally{
+            currentTest++;
+          }
       }else if(state=="suiteFinished"){
           runner.suiteFinish(suite);
           window.clearInterval(timer);
