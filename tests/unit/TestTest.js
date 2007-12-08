@@ -46,7 +46,7 @@ new TestSuite("TestTests", {
   expectErrorTest : function(t){
     var test = new Test("", function(){});
      test.expectError(function(){
-       throw Error;
+       throw new Error("expected error");
      });
     t.assert(true);
   },
@@ -60,6 +60,23 @@ new TestSuite("TestTests", {
     }catch(e){
        t.assert(e instanceof AssertionFailureError, "AssertionFailureError expected, got " + e);
     }
+ },
+ 
+ throwAndPassTest : function(t){
+    var mockControl = new MockControl();
+    runnerMock = mockControl.createMock(SimpleTestRunner);
+    
+    var test = new Test("", function(t){  t.throwAndPass(new Error("message")) });
+    
+    runnerMock.expects().testInit(test).andReturn(null);
+    runnerMock.expects().log("Throwing and ignoring error Error: message").andReturn(null);
+    runnerMock.expects().testSuccess(test).andReturn(null);
+    
+    t.expectError(function(){
+      test.run(runnerMock);
+    });
+    
+    mockControl.verify();
  },
 
  runSuccess : function(t){

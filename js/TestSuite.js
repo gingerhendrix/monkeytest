@@ -33,10 +33,7 @@ function TestSuite(name, tests){
       var suite = this;
       
       suite.setUp(test);
-      try{
-        test.run(runner);
-      }catch(e){
-      }
+      test.run(runner);
       suite.tearDown(test);
     }
     runner.suiteFinish(this);
@@ -56,32 +53,19 @@ function TestSuite(name, tests){
         if(currentTest < tests.length){
           state = "runTest";
           var test = tests[currentTest];
-          try{ 
-            suite.setUp(test);
-          }catch(e){
-            
-          }
+          suite.setUp(test);
         }else{
           state = "suiteFinished"
         }
       }else if(state=="runTest"){
           state = "finishTest";
           var test = tests[currentTest]; 
-          try{
-            test.run(runner);
-          }catch(e){
-            
-          }
+          test.run(runner);
       }else if(state=="finishTest"){
           state = "nextTest";
           var test = tests[currentTest];
-          try{ 
-            suite.tearDown(runner);
-          }catch(e){
-          
-          }finally{
-            currentTest++;
-          }
+          currentTest++;
+          suite.tearDown(runner);
       }else if(state=="suiteFinished"){
           runner.suiteFinish(suite);
           window.clearInterval(timer);

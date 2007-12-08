@@ -15,16 +15,13 @@ var TestManager = new function(){
     var runner = this.runner;
     runner.initRun(tests);
     tests.forEach(function(test){
-      try{
-        test.run(runner);
-      }catch(e){
-        
-      }
+      test.run(runner);
     })
     runner.finishRun();
   };
   
   this.asynchronousRun  = function(){
+    //Runs tests in parallel - not what we want - need to wait for testFinish
     var runner = this.runner;
     var currentTest = 0;
     var state = "initRun";

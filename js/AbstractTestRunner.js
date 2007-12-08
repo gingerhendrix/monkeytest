@@ -11,4 +11,6 @@ function AbstractTestRunner(){
    this.testSuccess = function(){};
    this.testFailure = function(){};
    this.testError = function(){};
+   
+   this.log = function(msg){};
 }

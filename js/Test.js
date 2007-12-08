@@ -1,5 +1,5 @@
 function Test(name, body, addTest){
-  this.expectsError = false;
+  this.ignoreError = false;
   this.waitForFinish = false;
   this.continuationTimeout = false;
   
@@ -23,6 +23,7 @@ function Test(name, body, addTest){
   }
   
   this.log = function(msg){
+    this.runner.log(msg);
   }
   
   this.expectError = function(func){
@@ -31,6 +32,11 @@ function Test(name, body, addTest){
       throw new AssertionFailureError("Expected Error");
     }catch(e){
     }
+  }
+  
+  this.throwAndPass = function(e){
+    this.ignoreError = true;
+    throw e;
   }
     
   this.continueWithTimeout = function(continuation, timeout){
@@ -67,11 +73,16 @@ function Test(name, body, addTest){
       }else if(JsUnitException && e instanceof JsUnitException){
           this.runner.testFailure(this, new AssertionFailureError(e.comment + " : " + e.jsUnitMessage));
       }else{
-        if(!this.expectsError){
+        if(!this.ignoreError){
           this.runner.testError(this, e);
           throw e;
         }else{
-          this.expectsError = false;
+          this.ignoreError = false;
+          this.log("Throwing and ignoring error " + e);
+          this.runner.testSuccess(this);
+          window.setTimeout(function(){
+            throw e;
+          }, 1);
         } 
       }
     }
@@ -81,7 +92,7 @@ function Test(name, body, addTest){
   this.run = function(runner){
     this.runner = runner;
     this.runner.testInit(this);
-    _run.apply(this,[body]);
+    _run.apply(this,[this.body]);
   }
 }
 
