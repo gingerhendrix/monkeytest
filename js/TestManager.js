@@ -9,47 +9,65 @@ var TestManager = new function(){
   }
   
   this.run = function(){
-    if(this.asynchronous){
-      return this.asynchronousRun();
-    }
+    var queue = new RunQueue();
     var runner = this.runner;
-    runner.initRun(tests);
+    var self = this;
+    queue.add(runner, runner.initRun, [tests]);
     tests.forEach(function(test){
-      test.run(runner);
-    })
-    runner.finishRun();
-  };
-  
-  this.asynchronousRun  = function(){
-    //Runs tests in parallel - not what we want - need to wait for testFinish
-    var runner = this.runner;
-    var currentTest = 0;
-    var state = "initRun";
-    var timer = window.setInterval(function(){
-      if(state=="initRun"){
-        state = "nextTest"
-        runner.initRun(tests);
-      }else if(state=="nextTest"){
-        if(currentTest < tests.length){
-          var test = tests[currentTest];
-          state = "nextTest";
-          currentTest++;
-        }else{
-          state = "finishRun";
-        }
-        try{
-          if(test.asynchronousRun){
-            test.asynchronousRun(runner);
-          }else{
-            test.run(runner);
-          }
-        }catch(e){
-        
-        }
-      }else if(state=="finishRun"){
-        window.clearInterval(timer);
-        runner.finishRun();
+      if(test.constructor == TestSuite){
+        self.runSuite(queue, test);    
+      }else{
+        self.runTest(queue, test); 
       }
-    }, 10);
+    }); 
+    queue.add(runner, runner.finishRun);
+    
+    queue.start();
   }
+  
+  this.runSuite = function(queue, suite){
+   var runner = this.runner;
+   queue.add(runner, runner.suiteInit, [suite]);
+   suite.tests.forEach(function(test){
+     queue.add(runner, runner.testInit, [test]);
+     queue.add(test, suite.setUp, [test]);
+     queue.add(test, test.run, [runner]);
+     queue.add(test, suite.tearDown, [test]);
+   });
+   queue.add(runner, runner.suiteFinish, [suite]);
+  }
+  
+  this.runTest = function(queue, test){
+    var runner = this.runner;
+    queue.add(runner, runner.testInit, [test]);
+    queue.add(test, test.run, [runner]);
+  }
+  
 }();
+
+var RunQueue = function(){
+  var runnables = [];
+  var currentRunnable = 0;
+  var timer;
+  
+  this.add = function(self, func, args){
+    if(!self || !func){
+      throw new Error("Cannot create runnable " + self + ", " + func + ", " + args);
+    }
+    runnables.push({self : self, func : func, args : args});
+  }
+  
+  this.start = function(){
+    currentRunnable = 0;
+    timer = window.setInterval(next, 10);  
+  }
+  
+  function next(){
+    if(currentRunnable >= runnables.length){
+      window.clearInterval(timer);
+      return;
+    }
+    var runnable = runnables[currentRunnable++];
+    runnable.func.apply(runnable.self, runnable.args || []);
+  }
+};

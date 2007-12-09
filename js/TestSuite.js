@@ -22,57 +22,6 @@ function TestSuite(name, tests){
     }    
   }
   
-  this.run = function(runner){
-    if(this.asynchronous){
-     this.asynchronousRun(runner); 
-     return;
-    }
-    runner.suiteInit(this);
-    for(var i=0; i<this.tests.length; i++){
-      var test = this.tests[i];
-      var suite = this;
-      
-      suite.setUp(test);
-      test.run(runner);
-      suite.tearDown(test);
-    }
-    runner.suiteFinish(this);
-  }
-  
-  this.asynchronousRun = function(runner){
-    var tests = this.tests;
-    var suite = this;
-    var state = "suiteInit";
-    var currentTest = 0;
-    var timer = window.setInterval(function(){
-      if(state=="suiteInit"){
-        state = "nextTest"
-        runner.suiteInit(suite);
-        currentTest = 0;
-      }else if(state=="nextTest"){
-        if(currentTest < tests.length){
-          state = "runTest";
-          var test = tests[currentTest];
-          suite.setUp(test);
-        }else{
-          state = "suiteFinished"
-        }
-      }else if(state=="runTest"){
-          state = "finishTest";
-          var test = tests[currentTest]; 
-          test.run(runner);
-      }else if(state=="finishTest"){
-          state = "nextTest";
-          var test = tests[currentTest];
-          currentTest++;
-          suite.tearDown(runner);
-      }else if(state=="suiteFinished"){
-          runner.suiteFinish(suite);
-          window.clearInterval(timer);
-      }
-    }, 10);  
-  }
-  
   function isTestMethod(obj, prop){
     return obj.hasOwnProperty(prop) 
       && typeof(obj[prop])=="function" 
