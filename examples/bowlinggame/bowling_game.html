@@ -1,0 +1,21 @@
+<html>
+  <head>
+    <title>Bowling Game - Unit Tests</title>
+   
+    <script src="../../dist/MonkeyTest.js"></script><!-- Load the library -->
+    
+    <script src="bowling_game.js"></script><!-- Source code under test -->
+    <script src="bowling_game_tests.js"></script><!-- Unit Tests -->
+   
+    <script>
+      TestManager.runner = new SimpleTestRunner() //Set up your test runner
+      
+      window.addEventListener("load",function(){ //Run your tests
+       TestManager.run();
+      }, true);
+    </script>
+   </head>
+   
+   <body>
+   </body>
+</html>
