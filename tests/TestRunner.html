@@ -2,26 +2,40 @@
   <head>
     <title>GMTest - Unit Tests</title>
     
-    <script src="../js/Test.js"></script>
+    <!-- Run the dist version -->
+    <script>
+      var MonkeyTest = { __export__ : false };
+    </script>
+    <script src="../dist/MonkeyTest.js"></script> 
+    <script>
+      var MonkeyTestDist = MonkeyTest;
+      var MonkeyTest = { __export__ : true };
+    </script>
+
+
+  <!--  <script src="../lib/jsUtils-0.1.js"></script>    -->
+    <!-- These are the files under test -->
+    <script src="../js/Test.js"></script> 
     <script src="../js/AbstractTestRunner.js"></script>
     <script src="../js/BaseTestRunner.js"></script>
     <script src="../js/SimpleTestRunner.js"></script>
     <script src="../js/TestManager.js"></script>
     <script src="../js/TestSuite.js"></script>
-    <script src="../js/GreasemonkeyTestRunner.js"></script>
-    
+
+    <!-- Test depencies -->
     <script src="lib/jsmock/jsmock.js"></script>
     
+    <!-- And finally the tests -->
+
     <script src="unit/TestTest.js"></script>
     <script src="unit/TestSuiteTest.js"></script>
     <script src="unit/BaseTestRunnerTest.js"></script>
     <script src="unit/GreasemonkeyTestRunnerTest.js"></script>
     <script src="unit/SimpleTestRunnerTest.js"></script> 
     
-    
     <script>
       window.addEventListener("load",function(){
-       TestManager.run();
+       MonkeyTestDist.TestManager.run();
       }, true);
     </script>
     

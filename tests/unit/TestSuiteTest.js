@@ -1,5 +1,5 @@
 
-new TestSuite("TestSuite Test", {
+new MonkeyTestDist.TestSuite("TestSuite Test", {
 
   constructorTest : function(t){
         var tests = {

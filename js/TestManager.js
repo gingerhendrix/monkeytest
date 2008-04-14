@@ -1,15 +1,15 @@
 
 var TestManager = new function(){
   this.runner = new SimpleTestRunner(); 
-  this.asynchronous = false;
   var tests = [];
+  var queue;
   
   this.addTest = function(test){
     tests.push(test);
   }
   
   this.run = function(){
-    var queue = new RunQueue();
+    this.queue = queue = new RunQueue();
     var runner = this.runner;
     var self = this;
     queue.add(runner, runner.initRun, [tests]);
@@ -23,6 +23,14 @@ var TestManager = new function(){
     queue.add(runner, runner.finishRun);
     
     queue.start();
+  }
+  
+  this.pause = function(){
+    queue.pause();
+  }
+  
+  this.restart = function(){
+    queue.restart();
   }
   
   this.runSuite = function(queue, suite){
@@ -48,6 +56,7 @@ var TestManager = new function(){
 var RunQueue = function(){
   var runnables = [];
   var currentRunnable = 0;
+  var paused = false;
   var timer;
   
   this.add = function(self, func, args){
@@ -59,15 +68,27 @@ var RunQueue = function(){
   
   this.start = function(){
     currentRunnable = 0;
-    timer = window.setInterval(next, 10);  
+    timer = window.setTimeout(next, 10);  
+  }
+  
+  this.pause = function(){
+    paused = true;
+  }
+  
+  this.restart = function(){
+    paused = false;
+    timer = window.setTimeout(next, 10);  
   }
   
   function next(){
     if(currentRunnable >= runnables.length){
-      window.clearInterval(timer);
       return;
     }
     var runnable = runnables[currentRunnable++];
     runnable.func.apply(runnable.self, runnable.args || []);
+    if(!paused){
+      paused = false;
+      timer = window.setTimeout(next, 10);  
+    }
   }
 };

@@ -1,3 +1,4 @@
+
 function Test(name, body, addTest){
   this.ignoreError = false;
   this.waitForFinish = false;
@@ -15,7 +16,6 @@ function Test(name, body, addTest){
     if(!cond){
       throw new AssertionFailureError(msg);
     }
-    
   }
   
   this.fail = function(msg){
@@ -29,9 +29,11 @@ function Test(name, body, addTest){
   this.expectError = function(func){
     try{
       func();
-      throw new AssertionFailureError("Expected Error");
     }catch(e){
+      failed = false;
+      return;
     }
+    throw new AssertionFailureError("Expected Error but none was thrown");
   }
   
   this.throwAndPass = function(e){
@@ -41,22 +43,24 @@ function Test(name, body, addTest){
     
   this.continueWithTimeout = function(continuation, timeout){
     this.waitForFinish = true;
+    TestManager.pause();
     var test = this;
     
     var timer = window.setTimeout(function(){
-      
       test.continuationTimeout = true;
       _run.apply(test, [function(test){
          test.fail("Continuation Timed out after: " + timeout);
-      }])    
+      }]);
+      TestManager.restart();      
     }, timeout);
      
     return function(){
       test.waitForFinish = false;
       window.clearTimeout(timer);
-      
+
       if(!test.continuationTimeout){
         _run.apply(test, [continuation]);
+        TestManager.restart()
       }
     }
   }
@@ -75,7 +79,9 @@ function Test(name, body, addTest){
       }else{
         if(!this.ignoreError){
           this.runner.testError(this, e);
-          throw e;
+          window.setTimeout(function(){
+            throw e;
+           }, 1);
         }else{
           this.ignoreError = false;
           this.log("Throwing and ignoring error " + e);
@@ -106,5 +112,5 @@ if(typeof JsUnitException == "undefined"){
   JsUnitException = function(){};
 }
 
-if (typeof(GMTest) == "undefined") GMTest = {}
-GMTest.Test = Test
+
+

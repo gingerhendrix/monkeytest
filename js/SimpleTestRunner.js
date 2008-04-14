@@ -1,5 +1,5 @@
 
-function SimpleTestRunner(){
+var SimpleTestRunner = function(){
   this.window;
   this.testListEl;
   this.overviewEl;

@@ -1,2 +1,2 @@
 
-new TestSuite("SimpleTestRunner tests", {});
+new MonkeyTestDist.TestSuite("SimpleTestRunner tests", {});

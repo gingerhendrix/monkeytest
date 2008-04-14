@@ -1,4 +1,4 @@
-new TestSuite("BaseTestRunner", {
+new MonkeyTestDist.TestSuite("BaseTestRunner", {
   setUp : function(t){
     t.runnerDefaults = {
         suites : 2,
