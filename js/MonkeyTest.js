@@ -19,7 +19,7 @@ Utils.revertNamespace();
   <%= include 'TestManager.js' %>
   <%= include 'TestSuite.js' %>
 
-  Utils.extend(MonkeyTest, {
+  Utils.namespace("MonkeyTest", {
     Test : Test,
     TestSuite : TestSuite,
     TestManager : TestManager,

@@ -106,7 +106,7 @@ function AssertionFailureError(message){
    this.message = message;
    this.name = "AssertionFailureError";
 }
-AssertionFailureError.prototype = new Error();
+//AssertionFailureError.prototype = new Error();
 
 if(typeof JsUnitException == "undefined"){
   JsUnitException = function(){};

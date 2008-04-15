@@ -7,15 +7,10 @@ new MonkeyTestDist.TestSuite("TestTests", {
    t.assert(true, "Assert true should not fail");
  },
  constructorTest : function(t){
-    var mockControl = new MockControl();
-    TestManager = mockControl.createMock(TestManager);
-    
-    TestManager.expects().addTest(TypeOf.isA(Test));
     var body = function(){};
     var test = new Test("NAME", body);
     t.assert(test.name == "NAME", "Incorrect name" + test.name)
     t.assert(test.body == body, "Incorrect body " + test.body)
-    mockControl.verify();
     t.assert(true);
   },
   assertionTest : function(t){
@@ -101,7 +96,7 @@ new MonkeyTestDist.TestSuite("TestTests", {
     
     runnerMock.expects().testInit(test).andReturn(null);
     runnerMock.expects().testAssertion(test).andReturn(null);
-    runnerMock.expects().testFailure(test, "AssertionFailureError").andReturn(null);
+    runnerMock.expects().testFailure(test, TypeOf.isA(AssertionFailureError)).andReturn(null);
     
     test.run(runnerMock);
     
@@ -117,7 +112,7 @@ new MonkeyTestDist.TestSuite("TestTests", {
       
       runnerMock.expects().testInit(test)
       runnerMock.expects().testAssertion(test)
-      runnerMock.expects().testFailure(test, "AssertionFailureError: Message").andReturn(null);
+      runnerMock.expects().testFailure(test, TypeOf.isA(AssertionFailureError)).andReturn(null);
       
       test.run(runnerMock);
       

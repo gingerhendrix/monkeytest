@@ -1,15 +1,55 @@
 
+function RunQueue(){
+  var runnables = [];
+  var currentRunnable = 0;
+  var paused = false;
+  var timer;
+  
+  this.add = function(self, func, args){
+    if(!self || !func){
+      throw new Error("Cannot create runnable " + self + ", " + func + ", " + args);
+    }
+    runnables.push({self : self, func : func, args : args});
+  }
+  
+  this.start = function(){
+    currentRunnable = 0;
+    timer = window.setTimeout(next, 10);  
+  }
+  
+  this.pause = function(){
+    paused = true;
+  }
+  
+  this.restart = function(){
+    paused = false;
+    timer = window.setTimeout(next, 10);  
+  }
+  
+  function next(){
+    if(currentRunnable >= runnables.length){
+      return;
+    }
+    var runnable = runnables[currentRunnable++];
+    runnable.func.apply(runnable.self, runnable.args || []);
+    if(!paused){
+      paused = false;
+      timer = window.setTimeout(next, 10);  
+    }
+  }
+};
+
 var TestManager = new function(){
   this.runner = new SimpleTestRunner(); 
   var tests = [];
-  var queue;
+  var queue = new RunQueue();
   
   this.addTest = function(test){
     tests.push(test);
   }
   
   this.run = function(){
-    this.queue = queue = new RunQueue();
+    queue = new RunQueue();
     var runner = this.runner;
     var self = this;
     queue.add(runner, runner.initRun, [tests]);
@@ -53,42 +93,4 @@ var TestManager = new function(){
   
 }();
 
-var RunQueue = function(){
-  var runnables = [];
-  var currentRunnable = 0;
-  var paused = false;
-  var timer;
-  
-  this.add = function(self, func, args){
-    if(!self || !func){
-      throw new Error("Cannot create runnable " + self + ", " + func + ", " + args);
-    }
-    runnables.push({self : self, func : func, args : args});
-  }
-  
-  this.start = function(){
-    currentRunnable = 0;
-    timer = window.setTimeout(next, 10);  
-  }
-  
-  this.pause = function(){
-    paused = true;
-  }
-  
-  this.restart = function(){
-    paused = false;
-    timer = window.setTimeout(next, 10);  
-  }
-  
-  function next(){
-    if(currentRunnable >= runnables.length){
-      return;
-    }
-    var runnable = runnables[currentRunnable++];
-    runnable.func.apply(runnable.self, runnable.args || []);
-    if(!paused){
-      paused = false;
-      timer = window.setTimeout(next, 10);  
-    }
-  }
-};
+

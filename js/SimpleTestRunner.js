@@ -1,5 +1,6 @@
 
 var SimpleTestRunner = function(){
+  this.testInNewWindow = false;
   this.window;
   this.testListEl;
   this.overviewEl;
@@ -8,21 +9,23 @@ var SimpleTestRunner = function(){
   this.base = new BaseTestRunner();
   
   function makeWindow(){
-    var window = window.open("", "functional_test_runner", "width=600, height=600, location=no, toolbar=no, menubar=no, resizable=yes");
-    window.document.body.innerHTML = "<h1>Functional Test Runner</h1>";
-    return window;
+    var w = window.open("", "functional_test_runner", "width=600, height=600, location=no, toolbar=no, menubar=no, resizable=yes");
+    w.document.body.innerHTML = "<h1>Functional Test Runner</h1>";
+    return w;
   }
   
   function listTests(tests){
-    this.testListEl = makeList(tests)
+    this.testListEl = makeList.apply(this, [tests])
     this.window.document.body.appendChild(this.testListEl);
   }
   
   function makeList(tests){
-    var testList = document.createElement("ul");
+    var doc = this.window.document;
+    var testList = doc.createElement("ul");
+    
     tests.forEach(function(test){
-      var testEl = document.createElement("li");
-      var testNameEl = document.createElement("span");
+      var testEl = doc.createElement("li");
+      var testNameEl = doc.createElement("span");
       testNameEl.innerHTML = test.name;
       testEl.appendChild(testNameEl);
      
@@ -51,18 +54,21 @@ var SimpleTestRunner = function(){
   
   this.initRun = function(tests){
     this.base.initRun(tests);
-    if(SimpleTestRunner.testInNewWindow){
+    if(this.testInNewWindow){
       this.window = makeWindow();
     }else{
       this.window = window;
     }
+    var doc = this.window.document;
     var numTests = countTests(tests)
     this.progressBar = new ProgressBar(numTests);
-    this.window.document.body.appendChild(this.progressBar.element);
+    doc.body.appendChild(this.progressBar.element);
+    
     this.overviewEl = this.window.document.createElement("div");
     this.overviewEl.innerHTML = numTests + " tests";
-    this.window.document.body.appendChild(this.overviewEl);
-    listTests(tests);
+    doc.body.appendChild(this.overviewEl);
+    
+    listTests.apply(this, [tests]);
   }
   
   this.finishRun = function(){
@@ -116,12 +122,11 @@ var SimpleTestRunner = function(){
   this.testError = function(test, e){
      this.base.testError(test);
     _failure.call(this, test, "Error: " + e.message)
-    
   }
   
   function _failure(test, message){
     test.element.style.color = "#ff0000";
-    var msg = document.createElement("div");
+    var msg = this.window.document.createElement("div");
     msg.innerHTML = message;
     test.element.appendChild(msg);
     this.progressBar.increment();
@@ -164,4 +169,4 @@ var SimpleTestRunner = function(){
 
 SimpleTestRunner.prototype = new AbstractTestRunner();
 
-SimpleTestRunner.testInNewWindow = false;
+
