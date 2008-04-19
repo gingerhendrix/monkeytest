@@ -12,12 +12,12 @@ task :dist do
     end
   end
   Dir.chdir(APP_DIST_DIR) do
-    FileUtils.copy_file APP_NAME, "#{APP_NAME}-#{APP_VERSION}.js"
+    FileUtils.copy_file "#{APP_NAME}.js", "#{APP_NAME}-#{APP_VERSION}.js"
   end
   if File.directory?("website")
     FileUtils.mkdir_p "website/dist"
-    FileUtils.copy_file "dist/#{APP_NAME}",       "website/dist/#{APP_NAME}"
-    FileUtils.copy_file "dist/#{APP_NAME}",       "website/dist/#{APP_NAME}-#{APP_VERSION}.js"
+    FileUtils.copy_file "dist/#{APP_NAME}.js",       "website/dist/#{APP_NAME}.js"
+    FileUtils.copy_file "dist/#{APP_NAME}.js",       "website/dist/#{APP_NAME}-#{APP_VERSION}.js"
   end
 end
 
