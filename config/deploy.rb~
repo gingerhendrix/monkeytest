@@ -1,0 +1,19 @@
+set :application, "monkeytest"
+set :scm, "git"
+set :repository,  "git@github.com:gingerhendrix/monkeytest.git"
+set :deploy_to, "/home/1439/users/.home/projects/#{application}"
+set :link_to, "/home/1439/domains/gandrew.com/html/projects/#{application}"
+
+role :app, "gandrew.com"
+role :web, "gandrew.com"
+role :db,  "gandrew.com", :primary => true
+
+desc "This will deploy the app"
+namespace :ga do
+  task :deploy do
+  #  run "git --quiet #{checkout} #{repository} #{release_path}"
+  #  run "ln -nfs #{release_path} #{current_path}"
+  #  run "cp #{release_path}/config/production/htaccess #{release_path}/.htaccess"
+  #  run "cp #{release_path}/config/production/environment.php #{release_path}/config/environment.php"    
+  end
+end
