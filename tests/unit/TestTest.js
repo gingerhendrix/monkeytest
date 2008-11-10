@@ -129,7 +129,14 @@ new MonkeyTestDist.TestSuite("TestTests", {
     //TestManager = mockControl.createMock(TestManager);
     
     //TestManager.expects().pause();
-    var testContinuation = test.continueWithTimeout(function(){}, 1000);
+    var testContinuation = test.continueWithTimeout(function(){
+      //Note these tests will fail on the object under test, rather than the dist test library
+      //Hard to debug.
+      t.assert(arguments.length == 3, "Wrong length " + arguments.length);
+      t.assert(arguments[0] == test, "First argument should be test, got " + arguments[0]);
+      t.assert(arguments[1] == "arg1", "Second argument should be 'arg1', got " + arguments[1]);
+      t.assert(arguments[2] == "arg2", "Second argument should be 'arg2', got " + arguments[2]);
+     }, 1000);
     mockControl.verify();    
     t.assert(true);
     
@@ -137,13 +144,13 @@ new MonkeyTestDist.TestSuite("TestTests", {
       runnerMock.expects().testSuccess(test);
       //TestManager.expects().restart();
       
-      testContinuation();
+      testContinuation("arg1", "arg2");
       
       mockControl.verify();
       //TestManager = oldTM;
       t.assert(true);
     }, 1000);
     
-    window.setTimeout(continuation, 10);
+    window.setTimeout(function(){ continuation(); }, 10);
   }
 });

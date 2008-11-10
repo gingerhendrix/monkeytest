@@ -105,7 +105,7 @@ Utils.revertNamespace();
   var __should_export = ((typeof(MonkeyTest) != "undefined") ? MonkeyTest.__export__ : true);
 
   Utils.replaceNamespace("MonkeyTest", {
-    Version: '0.2.1',
+    Version: '0.2.2',
     __export__ : __should_export
   });
 
@@ -166,11 +166,15 @@ function Test(name, body, addTest){
     }, timeout);
 
     return function(){
+      var args = Array.prototype.slice.call(arguments)
+      args.unshift(test);
       test.waitForFinish = false;
       window.clearTimeout(timer);
 
       if(!test.continuationTimeout){
-        _run.apply(test, [continuation]);
+        _run.apply(test, [function(t){
+            continuation.apply(test, args);
+         }]);
         TestManager.restart()
       }
     }
@@ -598,9 +602,11 @@ TestSuite.tearDownProperty = "tearDown"
     TestSuite : TestSuite,
     TestManager : TestManager,
     BaseTestRunnner : BaseTestRunner,
+    AbstractTestRunner : AbstractTestRunner,
     SimpleTestRunner : SimpleTestRunner,
     AssertionFailureError : AssertionFailureError
   });
+  MonkeyTest.BaseTestRunner = BaseTestRunner; //No idea why this is required!
 
 })(__utils);
 

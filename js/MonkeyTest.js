@@ -24,9 +24,11 @@ Utils.revertNamespace();
     TestSuite : TestSuite,
     TestManager : TestManager,
     BaseTestRunnner : BaseTestRunner,
+    AbstractTestRunner : AbstractTestRunner,
     SimpleTestRunner : SimpleTestRunner,
     AssertionFailureError : AssertionFailureError
   });
+  MonkeyTest.BaseTestRunner = BaseTestRunner; //No idea why this is required!
 
 })(__utils);
 

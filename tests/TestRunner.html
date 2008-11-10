@@ -6,7 +6,7 @@
     <script>
       var MonkeyTest = { __export__ : false };
     </script>
-    <script src="../dist/MonkeyTest.js"></script> 
+    <script src="../dist/monkeytest.js"></script> 
     <script>
       var MonkeyTestDist = MonkeyTest;
       var MonkeyTest = { __export__ : true };
@@ -14,6 +14,10 @@
 
 
   <!--  <script src="../lib/jsUtils-0.1.js"></script>    -->
+    <script src="../lib/base2-p.js"></script>
+    <script>
+      base2.JavaScript.bind(window);
+  </script>
     <!-- These are the files under test -->
     <script src="../js/Test.js"></script> 
     <script src="../js/AbstractTestRunner.js"></script>
@@ -34,13 +38,13 @@
     <script src="unit/SimpleTestRunnerTest.js"></script> 
     
     <script>
-      window.addEventListener("load",function(){
-       MonkeyTestDist.TestManager.run();
-      }, true);
+      function startup(){
+         MonkeyTestDist.TestManager.run();
+      }
     </script>
     
   </head>
-  <body>
+  <body onload="startup();">
     
   </body>
 </html>

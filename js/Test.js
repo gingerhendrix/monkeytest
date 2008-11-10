@@ -55,11 +55,15 @@ function Test(name, body, addTest){
     }, timeout);
      
     return function(){
+      var args = Array.prototype.slice.call(arguments)
+      args.unshift(test);
       test.waitForFinish = false;
       window.clearTimeout(timer);
 
       if(!test.continuationTimeout){
-        _run.apply(test, [continuation]);
+        _run.apply(test, [function(t){
+            continuation.apply(test, args);
+         }]);
         TestManager.restart()
       }
     }
