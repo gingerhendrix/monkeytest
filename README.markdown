@@ -3,11 +3,11 @@
 
 MonkeyTest is a lightweight extensible testing library for javascript and greasemonkey.
 
-    * It is designed to be usable in testing greasemonkey scripts,as well as regular javascript
-    * It is compatible with many other testing libraries.
-    * It is fully extensible.
-    * Download [ latest | 0.2.1 ]
-    * Source @ GitHub
+* It is designed to be usable in testing greasemonkey scripts,as well as regular javascript
+* It is compatible with many other testing libraries.
+* It is fully extensible.
+* Download [ latest | 0.2.1 ]
+* Source @ GitHub
 
 ##Basic Use
 
