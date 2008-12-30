@@ -166,6 +166,7 @@ function Test(name, body, addTest){
     }, timeout);
 
     return function(){
+      var that = this;
       var args = Array.prototype.slice.call(arguments)
       args.unshift(test);
       test.waitForFinish = false;
@@ -173,7 +174,7 @@ function Test(name, body, addTest){
 
       if(!test.continuationTimeout){
         _run.apply(test, [function(t){
-            continuation.apply(test, args);
+            continuation.apply(that, args);
          }]);
         TestManager.restart()
       }
